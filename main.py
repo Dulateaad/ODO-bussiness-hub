@@ -1,45 +1,27 @@
-import os
-import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    ContextTypes,
-)
+import telebot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
-# Настройки
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Токен из переменных окружения
-TARGET_URL = "https://studio--studio-122846357-42699.us-central1.hosted.app"
-PORT = int(os.getenv("PORT", 8080))
-WEBHOOK_URL = os.getenv("RENDER_EXTERNAL_URL")  # Render сам подставит URL
+# <<<=== ВПИШИ СВОЙ ТОКЕН и ссылку на мини-апп ===>>>
+TOKEN = "8261494879:AAGGHa-BiI03J1UGPntKvZ2i2lmNOM3fu8Q"
+WEBAPP_URL = "https://studio--studio-122846357-42699.us-central1.hosted.app"
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [InlineKeyboardButton("Открыть Studio", url=TARGET_URL)]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(
-        "👋 Привет! Нажмите кнопку, чтобы открыть Studio:",
-        reply_markup=reply_markup
+@bot.message_handler(commands=['start'])
+def start(message):
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(
+        InlineKeyboardButton(
+            text="🚀 Открыть мини-приложение",
+            web_app=WebAppInfo(url=WEBAPP_URL)
+        )
     )
-
-def main():
-    if not TOKEN:
-        raise ValueError("❌ BOT_TOKEN не задан!")
-
-    app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-
-    # Запуск как webhook для Render
-    logger.info("🚀 Запуск бота через webhook...")
-    app.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        webhook_url=f"{WEBHOOK_URL}/webhook"
+    bot.send_message(
+        message.chat.id,
+        "Привет! Нажми кнопку ниже, чтобы открыть мини-приложение:",
+        reply_markup=keyboard
     )
 
 if __name__ == "__main__":
-    main()
+    print("Бот запущен. Нажмите Ctrl+C для остановки.")
+    bot.infinity_polling()
