@@ -8,7 +8,7 @@ from telegram.ext import (
 )
 
 # Настройки
-TOKEN = os.getenv("BOT_TOKEN")  # Токен из переменных окружения
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Токен из переменных окружения
 TARGET_URL = "https://studio--studio-122846357-42699.us-central1.hosted.app"
 PORT = int(os.getenv("PORT", 8080))
 WEBHOOK_URL = os.getenv("RENDER_EXTERNAL_URL")  # Render сам подставит URL
